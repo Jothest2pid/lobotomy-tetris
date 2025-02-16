@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="game-panel">
+            <div class="game-info">
+                <div class="hold-piece">
+                    <h3>Hold</h3>
+                    <canvas id="holdPiece" width="100" height="100"></canvas>
+                </div>
+                <div class="info-box">
+                    <div class="score">Score: <span id="score">0</span></div>
+                    <div class="level">Level: <span id="level">1</span></div>
+                    <div class="lines">Lines: <span id="lines">0</span></div>
+                </div>
+                <div class="next-piece">
+                    <h3>Next</h3>
+                    <canvas id="nextPiece" width="100" height="100"></canvas>
+                </div>
+            </div>
+            <canvas id="tetris" width="240" height="400"></canvas>
+            <div class="controls">
+                <h3>Controls</h3>
+                <ul>
+                    <li>← → : Move</li>
+                    <li>↑ : Rotate</li>
+                    <li>↓ : Soft Drop</li>
+                    <li>Space : Hard Drop</li>
+                    <li>C : Hold Piece</li>
+                    <li>X : Lobotomy</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="tetrisOverlay" class="overlay">
+        <img src="lobotomy.jpg" alt="Tetris!" />
+    </div>
+    <div id="gameOverMessage" class="game-over">
+        <h2>Game Over!</h2>
+        <p>Press Space to restart</p>
+    </div>
+    <audio id="clearSound" src="lobotomy.wav" preload="auto"></audio>
+    <video id="turkeySandwich" src="turkey_sandwich.mp4" preload="auto" style="display: none;"></video>
+    <video id="subwaySurfers" src="Subway_Surfers_Gameplay.mp4" preload="auto" style="display: none;"></video>
+    <script src="game.js"></script>
+</body>
+</html>
