@@ -880,9 +880,6 @@ document.addEventListener('keydown', event => {
         case 67:
             holdCurrentPiece();
             break;
-        case 88:
-            forceLobotomy();
-            break;
     }
 });
 
