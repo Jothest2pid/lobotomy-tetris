@@ -8,6 +8,122 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Settings Button -->
+    <button id="settingsBtn" class="settings-btn">⚙️</button>
+    
+    <!-- Effects Collection Button -->
+    <button id="collectionBtn" class="collection-btn">📋</button>
+    
+    <!-- Developer Mode Button -->
+    <button id="devModeBtn" class="dev-mode-btn" style="display: none;">🧠 DEV</button>
+    
+    <!-- Settings Menu -->
+    <div id="settingsMenu" class="settings-menu">
+        <div class="settings-content">
+            <h2>⚙️ Settings</h2>
+            
+            <div class="setting-group">
+                <label for="volumeSlider">Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
+                <span id="volumeValue">50%</span>
+            </div>
+            
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="antiEpilepsyCheck">
+                    Anti-Epilepsy Mode
+                </label>
+                <small>Disables flashing effects</small>
+            </div>
+            
+            <div class="setting-group">
+                <label for="lobotomyThreshold">Lines for Lobotomy:</label>
+                <select id="lobotomyThreshold">
+                    <option value="1">1 Line</option>
+                    <option value="2">2 Lines</option>
+                    <option value="3">3 Lines</option>
+                    <option value="4" selected>4 Lines (Tetris)</option>
+                    <option value="5">5 Lines</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="developerModeCheck">
+                    Developer Mode
+                </label>
+                <small>Shows effect controls and instant lobotomy</small>
+            </div>
+            
+            <div class="settings-buttons">
+                <button id="resetSettings">Reset to Default</button>
+                <button id="closeSettings">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Effects Collection Menu -->
+    <div id="collectionMenu" class="collection-menu">
+        <div class="collection-content">
+            <h2>📋 Effects Collection</h2>
+            <div class="collection-stats">
+                <div class="stat">
+                    <span class="stat-label">Collected:</span>
+                    <span id="collectedCount">0</span>/<span id="totalCount">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Completion:</span>
+                    <span id="completionPercent">0%</span>
+                </div>
+            </div>
+            
+            <div class="rarity-filters">
+                <button class="rarity-filter active" data-rarity="all">All</button>
+                <button class="rarity-filter" data-rarity="common">Common</button>
+                <button class="rarity-filter" data-rarity="uncommon">Uncommon</button>
+                <button class="rarity-filter" data-rarity="rare">Rare</button>
+                <button class="rarity-filter" data-rarity="legendary">Legendary</button>
+            </div>
+            
+            <div id="collectionGrid" class="collection-grid">
+                <!-- Effects will be populated here -->
+            </div>
+            
+            <div class="collection-buttons">
+                <button id="resetCollection">Reset Collection</button>
+                <button id="closeCollection">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Developer Panel -->
+    <div id="developerPanel" class="developer-panel" style="display: none;">
+        <div class="dev-content">
+            <h3>🧠 Developer Panel</h3>
+            
+            <div class="dev-section">
+                <h4>Quick Actions</h4>
+                <button id="instantLobotomy" class="instant-lobotomy-btn">💥 INSTANT LOBOTOMY</button>
+                <button id="clearEffects">🧹 Clear All Effects</button>
+                <button id="resetEffectsList">📝 Reset Effects List</button>
+            </div>
+            
+            <div class="dev-section">
+                <h4>Triggered Effects</h4>
+                <div id="effectsList" class="effects-list">
+                    <div class="no-effects">No effects triggered yet</div>
+                </div>
+            </div>
+            
+            <div class="dev-section">
+                <h4>Manual Effect Trigger</h4>
+                <select id="effectSelector">
+                    <option value="">Select an effect...</option>
+                </select>
+                <button id="triggerEffect">Trigger Effect</button>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="game-panel">
             <div class="game-info">
@@ -48,6 +164,7 @@
     <audio id="clearSound" src="lobotomy.wav" preload="auto"></audio>
     <video id="turkeySandwich" src="turkey_sandwich.mp4" preload="auto" style="display: none;"></video>
     <video id="subwaySurfers" src="Subway_Surfers_Gameplay.mp4" preload="auto" style="display: none;"></video>
+    <script src="effects-system.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

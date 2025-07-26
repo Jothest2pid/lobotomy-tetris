@@ -213,59 +213,27 @@ function drawCornerLights(context, width, height) {
     }
 }
 
-let appliedEffects = new Set();
-
-const effects = [
-    () => {
-        const root = document.documentElement;
-        const scale = 1 + (Math.random() - 0.5) * 0.2;
-        root.style.setProperty('--scale', scale);
-    },
-    () => {
-        const root = document.documentElement;
-        const currentRotate = parseFloat(getComputedStyle(root).getPropertyValue('--rotate')) || 0;
-        const rotateAdd = (Math.random() - 0.5) * Math.pow(2, glitchLevel);
-        root.style.setProperty('--rotate', `${currentRotate + rotateAdd}deg`);
-    },
-    () => {
-        const root = document.documentElement;
-        const skew = (Math.random() - 0.5) * 5;
-        root.style.setProperty('--skew', `${skew}deg`);
-    },
-    () => {
-        document.querySelectorAll('.info-box, .controls, h3, li').forEach(el => {
-            el.classList.add('glitch-text');
-        });
-    },
-    () => {
-        document.querySelectorAll('.info-box, .controls, .next-piece, .hold-piece').forEach(el => {
-            el.classList.add('glitch-border');
-        });
-    },
-    () => {
-        document.querySelectorAll('.next-piece, .hold-piece').forEach(el => {
-            el.classList.add('glitch-rotate');
-        });
-    },
-    () => {
-        document.querySelectorAll('.info-box, .controls').forEach(el => {
-            el.classList.add('zoom-effect');
-        });
-    },
-    () => {
-        document.querySelectorAll('h3, li').forEach(el => {
-            el.classList.add('wave-effect');
-        });
-    }
-];
+// Global variables for effects system integration
+let controlsInverted = false;
+let cornerLightsActive = false;
 
 function applyVisualEffects() {
-    const availableEffects = effects.filter((_, index) => !appliedEffects.has(index));
-    if (availableEffects.length > 0) {
-        const effectIndex = Math.floor(Math.random() * availableEffects.length);
-        const actualIndex = effects.findIndex((effect) => effect === availableEffects[effectIndex]);
-        appliedEffects.add(actualIndex);
-        availableEffects[effectIndex]();
+    if (window.effectsSystem) {
+        // Trigger multiple random effects based on glitch level
+        const numEffects = Math.min(3, Math.floor(glitchLevel / 2) + 1);
+        for (let i = 0; i < numEffects; i++) {
+            window.effectsSystem.triggerRandomEffect('visual', glitchLevel);
+        }
+        
+        // Occasionally trigger gameplay effects
+        if (Math.random() < 0.3) {
+            window.effectsSystem.triggerRandomEffect('gameplay', glitchLevel);
+        }
+        
+        // Trigger media effects
+        if (Math.random() < 0.4) {
+            window.effectsSystem.triggerRandomEffect('media', glitchLevel);
+        }
     }
 }
 
@@ -726,71 +694,6 @@ function resetGame() {
     document.body.classList.remove('subway-active');
 }
 
-function arenaSweep() {
-    let rowCount = 1;
-    let clearedLines = [];
-    let newBoard = [];
-    
-    for (let y = board.length - 1; y >= 0; y--) {
-        let rowFull = true;
-        for (let x = 0; x < board[y].length; x++) {
-            if (board[y][x] === 0) {
-                rowFull = false;
-                break;
-            }
-        }
-        
-        if (rowFull) {
-            clearedLines.push(y);
-        } else {
-            newBoard.unshift([...board[y]]);
-        }
-    }
-    
-    if (clearedLines.length > 0) {
-        while (newBoard.length < BOARD_HEIGHT) {
-            newBoard.unshift(new Array(BOARD_WIDTH).fill(0));
-        }
-        
-        clearedLines.forEach(y => {
-            animatingLines.add(y);
-        });
-        
-        setTimeout(() => {
-            board = newBoard;
-            
-            animatingLines.clear();
-            
-            lines += clearedLines.length;
-            score += rowCount * 100 * level * clearedLines.length;
-            
-            if (lines % 10 === 0) {
-                level++;
-                dropInterval = Math.max(100, 1000 - (level - 1) * 100);
-            }
-            
-            updateScore();
-            
-            if (clearedLines.length === 4) {
-                clearSound.currentTime = 0;
-                clearSound.play();
-                cycleColors();
-                glitchLevel = Math.min(glitchLevel + 1, MAX_GLITCH);
-                
-                playTurkeySandwich();
-                
-                tetrisOverlay.classList.add('show');
-                setTimeout(() => {
-                    tetrisOverlay.classList.remove('show');
-                }, OVERLAY_DURATION);
-            }
-            
-            playerReset();
-        }, FLASH_DURATION);
-    } else {
-        playerReset();
-    }
-}
 
 function updateScore() {
     document.getElementById('score').textContent = score;
@@ -844,6 +747,341 @@ function update(time = 0) {
     requestAnimationFrame(update);
 }
 
+
+playerReset();
+update();
+
+// UI and Settings Management
+document.addEventListener('DOMContentLoaded', () => {
+    initializeUI();
+});
+
+function initializeUI() {
+    // Settings button
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsMenu = document.getElementById('settingsMenu');
+    const closeSettings = document.getElementById('closeSettings');
+    
+    settingsBtn.addEventListener('click', () => {
+        settingsMenu.classList.add('show');
+        loadSettingsUI();
+    });
+    
+    closeSettings.addEventListener('click', () => {
+        settingsMenu.classList.remove('show');
+    });
+    
+    // Click outside to close
+    settingsMenu.addEventListener('click', (e) => {
+        if (e.target === settingsMenu) {
+            settingsMenu.classList.remove('show');
+        }
+    });
+    
+    // Volume slider
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    
+    volumeSlider.addEventListener('input', (e) => {
+        const volume = parseFloat(e.target.value);
+        volumeValue.textContent = Math.round(volume * 100) + '%';
+        if (window.effectsSystem) {
+            window.effectsSystem.updateSettings({ volume });
+        }
+    });
+    
+    // Anti-epilepsy checkbox
+    const antiEpilepsyCheck = document.getElementById('antiEpilepsyCheck');
+    antiEpilepsyCheck.addEventListener('change', (e) => {
+        if (window.effectsSystem) {
+            window.effectsSystem.updateSettings({ antiEpilepsy: e.target.checked });
+        }
+    });
+    
+    // Lobotomy threshold
+    const lobotomyThreshold = document.getElementById('lobotomyThreshold');
+    lobotomyThreshold.addEventListener('change', (e) => {
+        if (window.effectsSystem) {
+            window.effectsSystem.updateSettings({ lobotomyThreshold: parseInt(e.target.value) });
+        }
+    });
+    
+    // Developer mode
+    const developerModeCheck = document.getElementById('developerModeCheck');
+    const devModeBtn = document.getElementById('devModeBtn');
+    const developerPanel = document.getElementById('developerPanel');
+    
+    developerModeCheck.addEventListener('change', (e) => {
+        const isDevMode = e.target.checked;
+        if (window.effectsSystem) {
+            window.effectsSystem.updateSettings({ developerMode: isDevMode });
+        }
+        
+        if (isDevMode) {
+            devModeBtn.style.display = 'block';
+            initializeDeveloperPanel();
+        } else {
+            devModeBtn.style.display = 'none';
+            developerPanel.style.display = 'none';
+        }
+    });
+    
+    // Developer mode button
+    devModeBtn.addEventListener('click', () => {
+        const isVisible = developerPanel.style.display === 'block';
+        developerPanel.style.display = isVisible ? 'none' : 'block';
+    });
+    
+    // Reset settings
+    const resetSettings = document.getElementById('resetSettings');
+    resetSettings.addEventListener('click', () => {
+        if (window.effectsSystem) {
+            window.effectsSystem.updateSettings({
+                volume: 0.5,
+                antiEpilepsy: false,
+                lobotomyThreshold: 4,
+                developerMode: false
+            });
+            loadSettingsUI();
+            
+            // Hide developer elements
+            devModeBtn.style.display = 'none';
+            developerPanel.style.display = 'none';
+        }
+    });
+    
+    // Collection button
+    const collectionBtn = document.getElementById('collectionBtn');
+    const collectionMenu = document.getElementById('collectionMenu');
+    const closeCollection = document.getElementById('closeCollection');
+    
+    collectionBtn.addEventListener('click', () => {
+        collectionMenu.classList.add('show');
+        if (window.effectsSystem) {
+            window.effectsSystem.updateCollectionUI();
+        }
+    });
+    
+    closeCollection.addEventListener('click', () => {
+        collectionMenu.classList.remove('show');
+    });
+    
+    // Click outside to close collection
+    collectionMenu.addEventListener('click', (e) => {
+        if (e.target === collectionMenu) {
+            collectionMenu.classList.remove('show');
+        }
+    });
+    
+    // Rarity filters
+    const rarityFilters = document.querySelectorAll('.rarity-filter');
+    rarityFilters.forEach(filter => {
+        filter.addEventListener('click', () => {
+            rarityFilters.forEach(f => f.classList.remove('active'));
+            filter.classList.add('active');
+            
+            const rarity = filter.dataset.rarity;
+            if (window.effectsSystem) {
+                window.effectsSystem.updateCollectionGrid(rarity);
+            }
+        });
+    });
+    
+    // Reset collection button
+    const resetCollection = document.getElementById('resetCollection');
+    resetCollection.addEventListener('click', () => {
+        if (window.effectsSystem && confirm('Are you sure you want to reset your collection? This cannot be undone.')) {
+            window.effectsSystem.resetCollection();
+        }
+    });
+    
+    // Load initial settings
+    setTimeout(() => {
+        if (window.effectsSystem) {
+            loadSettingsUI();
+            window.effectsSystem.updateCollectionUI();
+            if (window.effectsSystem.settings.developerMode) {
+                devModeBtn.style.display = 'block';
+                initializeDeveloperPanel();
+            }
+        }
+    }, 100);
+}
+
+function loadSettingsUI() {
+    if (!window.effectsSystem) return;
+    
+    const settings = window.effectsSystem.settings;
+    
+    // Update UI elements
+    document.getElementById('volumeSlider').value = settings.volume;
+    document.getElementById('volumeValue').textContent = Math.round(settings.volume * 100) + '%';
+    document.getElementById('antiEpilepsyCheck').checked = settings.antiEpilepsy;
+    document.getElementById('lobotomyThreshold').value = settings.lobotomyThreshold;
+    document.getElementById('developerModeCheck').checked = settings.developerMode;
+}
+
+function initializeDeveloperPanel() {
+    if (!window.effectsSystem) return;
+    
+    // Populate effect selector
+    const effectSelector = document.getElementById('effectSelector');
+    effectSelector.innerHTML = '<option value="">Select an effect...</option>';
+    
+    window.effectsSystem.getAllEffects().forEach(effect => {
+        const option = document.createElement('option');
+        option.value = effect.id;
+        option.textContent = `${effect.name} (${effect.category})`;
+        effectSelector.appendChild(option);
+    });
+    
+    // Instant lobotomy button
+    const instantLobotomy = document.getElementById('instantLobotomy');
+    instantLobotomy.addEventListener('click', () => {
+        forceLobotomy();
+    });
+    
+    // Clear effects button
+    const clearEffects = document.getElementById('clearEffects');
+    clearEffects.addEventListener('click', () => {
+        if (window.effectsSystem) {
+            window.effectsSystem.cleanupAllEffects();
+        }
+        
+        // Reset visual state
+        const root = document.documentElement;
+        root.style.setProperty('--scale', '1');
+        root.style.setProperty('--rotate', '0deg');
+        root.style.setProperty('--skew', '0deg');
+        
+        // Remove all effect classes
+        document.querySelectorAll('.glitch-text, .glitch-border, .glitch-rotate, .zoom-effect, .wave-effect').forEach(el => {
+            el.classList.remove('glitch-text', 'glitch-border', 'glitch-rotate', 'zoom-effect', 'wave-effect');
+        });
+        
+        // Reset game state
+        controlsInverted = false;
+        cornerLightsActive = false;
+        
+        // Hide videos
+        document.getElementById('turkeySandwich').style.display = 'none';
+        document.getElementById('subwaySurfers').style.display = 'none';
+        document.body.classList.remove('subway-active');
+    });
+    
+    // Reset effects list button
+    const resetEffectsList = document.getElementById('resetEffectsList');
+    resetEffectsList.addEventListener('click', () => {
+        if (window.effectsSystem) {
+            window.effectsSystem.clearTriggeredEffects();
+        }
+    });
+    
+    // Trigger effect button
+    const triggerEffect = document.getElementById('triggerEffect');
+    triggerEffect.addEventListener('click', () => {
+        const selectedEffect = effectSelector.value;
+        if (selectedEffect && window.effectsSystem) {
+            window.effectsSystem.triggerEffect(selectedEffect);
+        }
+    });
+    
+    // Update effects list
+    if (window.effectsSystem) {
+        window.effectsSystem.updateEffectsList();
+    }
+}
+
+// Update the arenaSweep function to use the new lobotomy threshold
+function arenaSweep() {
+    let rowCount = 1;
+    let clearedLines = [];
+    let newBoard = [];
+    
+    for (let y = board.length - 1; y >= 0; y--) {
+        let rowFull = true;
+        for (let x = 0; x < board[y].length; x++) {
+            if (board[y][x] === 0) {
+                rowFull = false;
+                break;
+            }
+        }
+        
+        if (rowFull) {
+            clearedLines.push(y);
+        } else {
+            newBoard.unshift([...board[y]]);
+        }
+    }
+    
+    if (clearedLines.length > 0) {
+        while (newBoard.length < BOARD_HEIGHT) {
+            newBoard.unshift(new Array(BOARD_WIDTH).fill(0));
+        }
+        
+        clearedLines.forEach(y => {
+            animatingLines.add(y);
+        });
+        
+        setTimeout(() => {
+            board = newBoard;
+            
+            animatingLines.clear();
+            
+            lines += clearedLines.length;
+            score += rowCount * 100 * level * clearedLines.length;
+            
+            if (lines % 10 === 0) {
+                level++;
+                dropInterval = Math.max(100, 1000 - (level - 1) * 100);
+            }
+            
+            updateScore();
+            
+            // Always play clear sound for any line clear
+            if (window.effectsSystem) {
+                window.effectsSystem.triggerEffect('clear-sound');
+            }
+            
+            // Check if we should trigger lobotomy based on settings
+            const threshold = window.effectsSystem?.settings?.lobotomyThreshold || 4;
+            if (clearedLines.length >= threshold) {
+                // Use new effects system
+                if (window.effectsSystem) {
+                    // Trigger audio distortion for lobotomy
+                    window.effectsSystem.triggerEffect('audio-distortion');
+                    
+                    // Trigger color cycling
+                    window.effectsSystem.triggerEffect('color-cycling');
+                    
+                    // Increase glitch level
+                    glitchLevel = Math.min(glitchLevel + 1, MAX_GLITCH);
+                    
+                    // Trigger turkey sandwich
+                    window.effectsSystem.triggerEffect('turkey-sandwich');
+                    
+                    // Apply visual effects
+                    applyVisualEffects();
+                    
+                    // Show overlay
+                    tetrisOverlay.classList.add('show');
+                    setTimeout(() => {
+                        tetrisOverlay.classList.remove('show');
+                    }, OVERLAY_DURATION);
+                } else {
+                    // Fallback to old system
+                    forceLobotomy();
+                }
+            }
+            
+            playerReset();
+        }, FLASH_DURATION);
+    } else {
+        playerReset();
+    }
+}
+
+// Update controls to handle inverted controls
 document.addEventListener('keydown', event => {
     if (isGameOver && event.keyCode === 32) {
         resetGame();
@@ -852,24 +1090,28 @@ document.addEventListener('keydown', event => {
     
     if (isGameOver) return;
 
+    let moveDir = 0;
+    
     switch (event.keyCode) {
-        case 37:
-            playerMove(-1);
+        case 37: // Left arrow
+            moveDir = controlsInverted ? 1 : -1;
+            playerMove(moveDir);
             break;
-        case 39:
-            playerMove(1);
+        case 39: // Right arrow
+            moveDir = controlsInverted ? -1 : 1;
+            playerMove(moveDir);
             break;
-        case 40:
+        case 40: // Down arrow
             player.pos.y++;
             if (collide(board, player)) {
                 player.pos.y--;
             }
             dropCounter = 0;
             break;
-        case 38:
+        case 38: // Up arrow
             playerRotate();
             break;
-        case 32:
+        case 32: // Space
             while (!collide(board, player)) {
                 player.pos.y++;
             }
@@ -877,11 +1119,8 @@ document.addEventListener('keydown', event => {
             merge(board, player);
             arenaSweep();
             break;
-        case 67:
+        case 67: // C key
             holdCurrentPiece();
             break;
     }
 });
-
-playerReset();
-update();

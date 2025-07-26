@@ -1,0 +1,193 @@
+{
+  "effects": [
+    {
+      "id": "clear-sound",
+      "name": "Clear Sound",
+      "description": "Plays the classic line clear sound effect",
+      "category": "audio",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "scale-distortion",
+      "name": "Scale Distortion",
+      "description": "The game interface randomly scales up and down",
+      "category": "visual",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "rotation-chaos",
+      "name": "Rotation Chaos", 
+      "description": "The entire game rotates at random angles",
+      "category": "visual",
+      "intensity": 2,
+      "epilepsyRisk": false,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "skew-transform",
+      "name": "Skew Transform",
+      "description": "Elements become skewed and distorted",
+      "category": "visual", 
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "glitch-text",
+      "name": "Glitch Text",
+      "description": "Text elements flash with rainbow colors",
+      "category": "visual",
+      "intensity": 2,
+      "epilepsyRisk": true,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "glitch-borders",
+      "name": "Glitch Borders",
+      "description": "UI borders flash with chaotic colors",
+      "category": "visual",
+      "intensity": 1,
+      "epilepsyRisk": true,
+      "rarity": "common"
+    },
+    {
+      "id": "element-rotation",
+      "name": "Element Rotation",
+      "description": "UI elements spin continuously",
+      "category": "visual",
+      "intensity": 2,
+      "epilepsyRisk": false,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "zoom-effect",
+      "name": "Zoom Effect",
+      "description": "Elements zoom in and out rhythmically",
+      "category": "visual",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "wave-effect",
+      "name": "Wave Effect",
+      "description": "Text bounces up and down like waves",
+      "category": "visual",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "piece-mutation",
+      "name": "Piece Mutation",
+      "description": "Tetris pieces randomly change shape",
+      "category": "gameplay",
+      "intensity": 3,
+      "epilepsyRisk": false,
+      "rarity": "rare"
+    },
+    {
+      "id": "color-cycling",
+      "name": "Color Cycling",
+      "description": "Block colors shift and change randomly",
+      "category": "gameplay",
+      "intensity": 2,
+      "epilepsyRisk": false,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "forced-piece-lock",
+      "name": "Piece Lock",
+      "description": "Forces the same piece type repeatedly",
+      "category": "gameplay",
+      "intensity": 4,
+      "epilepsyRisk": false,
+      "rarity": "rare"
+    },
+    {
+      "id": "board-chaos",
+      "name": "Board Chaos",
+      "description": "Random blocks appear and disappear on the board",
+      "category": "gameplay",
+      "intensity": 5,
+      "epilepsyRisk": false,
+      "rarity": "legendary"
+    },
+    {
+      "id": "turkey-sandwich",
+      "name": "Turkey Sandwich",
+      "description": "A mysterious turkey sandwich video appears",
+      "category": "media",
+      "intensity": 2,
+      "epilepsyRisk": false,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "subway-surfers",
+      "name": "Subway Surfers",
+      "description": "Brain rot gaming content takes over half the screen",
+      "category": "media",
+      "intensity": 3,
+      "epilepsyRisk": false,
+      "rarity": "rare"
+    },
+    {
+      "id": "audio-distortion",
+      "name": "Audio Distortion",
+      "description": "Sound effects become distorted and chaotic",
+      "category": "audio",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "screen-flash",
+      "name": "Screen Flash",
+      "description": "The screen flashes with random bright colors",
+      "category": "screen",
+      "intensity": 3,
+      "epilepsyRisk": true,
+      "rarity": "rare"
+    },
+    {
+      "id": "corner-lights",
+      "name": "Corner Lights",
+      "description": "Random lights appear in the corners of the screen",
+      "category": "screen",
+      "intensity": 1,
+      "epilepsyRisk": false,
+      "rarity": "common"
+    },
+    {
+      "id": "hold-piece-swap",
+      "name": "Hold Piece Swap",
+      "description": "Current and hold pieces randomly swap places",
+      "category": "gameplay",
+      "intensity": 3,
+      "epilepsyRisk": false,
+      "rarity": "rare"
+    },
+    {
+      "id": "speed-chaos",
+      "name": "Speed Chaos",
+      "description": "Game speed randomly increases and decreases",
+      "category": "gameplay",
+      "intensity": 4,
+      "epilepsyRisk": false,
+      "rarity": "rare"
+    },
+    {
+      "id": "inverted-controls",
+      "name": "Inverted Controls",
+      "description": "Movement controls become inverted",
+      "category": "gameplay",
+      "intensity": 5,
+      "epilepsyRisk": false,
+      "rarity": "legendary"
+    }
+  ]
+}
