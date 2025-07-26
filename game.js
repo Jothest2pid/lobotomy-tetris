@@ -1048,20 +1048,20 @@ function arenaSweep() {
             if (clearedLines.length >= threshold) {
                 // Use new effects system
                 if (window.effectsSystem) {
-                    // Trigger audio distortion for lobotomy
-                    window.effectsSystem.triggerEffect('audio-distortion');
-                    
-                    // Trigger color cycling
-                    window.effectsSystem.triggerEffect('color-cycling');
-                    
                     // Increase glitch level
                     glitchLevel = Math.min(glitchLevel + 1, MAX_GLITCH);
                     
-                    // Trigger turkey sandwich
-                    window.effectsSystem.triggerEffect('turkey-sandwich');
+                    // Trigger ONE random effect based on glitch level
+                    const availableEffects = ['piece-mutation', 'color-cycling', 'turkey-sandwich', 'subway-surfers', 'audio-distortion', 'screen-flash', 'forced-piece-lock', 'board-chaos', 'hold-piece-swap', 'speed-chaos', 'inverted-controls'];
+                    const filteredEffects = availableEffects.filter(effectId => {
+                        const effect = window.effectsSystem.effects.get(effectId);
+                        return effect && effect.intensity <= glitchLevel;
+                    });
                     
-                    // Apply visual effects
-                    applyVisualEffects();
+                    if (filteredEffects.length > 0) {
+                        const randomEffect = filteredEffects[Math.floor(Math.random() * filteredEffects.length)];
+                        window.effectsSystem.triggerEffect(randomEffect);
+                    }
                     
                     // Show overlay
                     tetrisOverlay.classList.add('show');
